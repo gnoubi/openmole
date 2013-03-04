@@ -15,7 +15,7 @@ import java.util.UUID
 import Database.threadLocalSession
 import java.io.IOException
 
-object Workflows extends Table[(Int, String, UUID)]("WORKFLOWS") {
+object Workflows extends Table[(Int, String, String, UUID)]("WORKFLOWS") {
   def id = column[Int]("WF_ID", O.PrimaryKey) // This is the primary key column
   def name = column[String]("WF_NAME")
   def version = column[String]("WF_VERSION")
@@ -32,13 +32,13 @@ object Tags extends Table[(Int, String)]("TAGS") {
   def * = id ~ name
 }
 
-object WFTag extends Table[(Int, Int)]("WFTag") {
+object WFTag extends Table[(Int, Int)]("WFTAG") {
   def wfId = column[Int]("WF_ID")
   def tagId = column[Int]("TAG_ID")
   // Every table needs a * projection with the same type as the table's type parameter
-  def * = id ~ name
-  def workflow = foreignKey("WF_FK", wfiD, Workflows)(_.id)
-  def tag = foreignKey("TAG_FK", tagiD, Tags)(_.id)
+  def * = wfId ~ tagId
+  def workflow = foreignKey("WF_FK", wfId, Workflows)(_.id)
+  def tag = foreignKey("TAG_FK", tagId, Tags)(_.id)
 }
 
 // Definition of the SUPPLIERS table

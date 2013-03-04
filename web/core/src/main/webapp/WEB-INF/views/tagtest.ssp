@@ -1,0 +1,37 @@
+#set (title)
+Tag test page
+#end
+
+<%@ val errors: List[String] = Nil %>
+#set (js)
+<%= unescape(for(error <- errors) yield "displayError(\"" +error+ "\");") %>
+    $(function(){
+
+    $("#singleFieldTags").tagit({
+      allowNewTags: false,
+      tagSource: function(search, showChoices) {
+        $.ajax({
+          url: "/repo/json",
+          dataType:   "json",
+          data: {q: search.term},
+          success: function(choices) {
+
+            showChoices(choices);
+            console.log(choices);
+          }
+        })},
+           beforeTagAdded: function(event, ui) {
+            //var word = eventTags_text.tagit('tagLabel', ui.tag);
+            //$("#singleFieldTags").tagit("removeTagByLabel", word);
+                       // do something special
+                console.log(ui.tag);
+           }});
+
+    });
+#end
+
+<%@ val body: String %>
+<b><%= unescape(body)%></b>
+<form name="tag-data">
+    <input name="tags" id="singleFieldTags" >
+</form>

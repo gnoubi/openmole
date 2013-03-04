@@ -19,6 +19,7 @@ import javax.servlet.{ MultipartConfigElement, ServletException }
 import scala.collection.JavaConversions._
 
 class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with ScalateSupport with FileUploadSupport with FutureSupport with SlickSupport {
+
   configureMultipartHandling(MultipartConfig(maxFileSize = Some(3 * 1024 * 1024), fileSizeThreshold = Some(1024 * 1024 * 1024)))
 
   protected implicit def executor: ExecutionContext = system.dispatcher
@@ -39,6 +40,28 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
         ssp("/uploadMole", "body" -> "Please upload an om file below!")
       }
     }
+  }
+
+  get("/tagtest") {
+    contentType = "text/html"
+    new AsyncResult() {
+      val is = Future {
+        ssp("/tagtest", "body" -> "Please enter tag below !")
+      }
+    }
+  }
+
+  get("/json") {
+    contentType = "application/json"
+    new AsyncResult() {
+      val is = Future {
+        val term = params.get("term")
+        println("result = " + term)
+        val result = "[\"scala\", \"test\"]"
+        result
+      }
+    }
+
   }
 
   get("/oms") {
@@ -71,18 +94,15 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
   }
 
   // This method processes the uploaded file in some way.
-  def processFile(upload: Option[FileItem]) = {
-    upload match {
-      case Some(fileI: FileItem) ⇒
-        val filePath: String = "/tmp/"
-        println(">> " + fileI.getName)
-        try {
-          val file: File = new File(filePath + fileI.getName)
-          fileI.write(file)
-        } catch {
-          case e: IOException ⇒ println("Error " + e)
-        }
+  def processFile(upload: FileItem) = {
 
+    val filePath: String = "/tmp/"
+    println(">> " + upload.getName)
+    try {
+      val file: File = new File(filePath + upload.getName)
+      upload.write(file)
+    } catch {
+      case e: IOException ⇒ println("Error " + e)
     }
   }
 
@@ -93,14 +113,12 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
 
     val x = new AsyncResult() {
       val is = Future {
-
-        val document = fileParams("file")
-        println("why not try to write ?")
-
         try {
-          val tempFile = File.createTempFile("scalatra-test-", document.name)
-          document.write(tempFile)
-          "file size: " + tempFile.length
+          val document: FileItem = fileParams("file")
+          println("file name: " + document.name)
+          processFile(document)
+          //new GUISerializer(tempFile.toString).unserialize
+          //ScenesManager.moleScenes.map { s ⇒ println("name : " + s.manager.name) }
         } catch {
           case e: IOException ⇒ println("IO Error " + e)
           case s: SecurityException ⇒ println("Security Error " + s)
