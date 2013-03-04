@@ -21,9 +21,12 @@ Tag test page
           }
         })},
            beforeTagAdded: function(event, ui) {
+           if ($.inArray(ui.tagLabel, search) == -1) {
+              $("#singleFieldTags").tagit("removeTagByLabel", ui.tagLabel);
+            }
             //var word = eventTags_text.tagit('tagLabel', ui.tag);
             //$("#singleFieldTags").tagit("removeTagByLabel", word);
-                       // do something special
+            // do something special
                 console.log(ui.tag);
            }});
 
