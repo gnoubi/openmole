@@ -18,6 +18,19 @@ import com.thoughtworks.xstream.mapper.CannotResolveClassException
 import javax.servlet.{ MultipartConfigElement, ServletException }
 import scala.collection.JavaConversions._
 
+import java.util.Properties
+import org.openmole.web.{ Suppliers, SlickSupport, Coffees }
+import org.slf4j.LoggerFactory
+
+import slick.driver.H2Driver.simple._
+import com.jolbox.bonecp._
+import java.sql.SQLException
+import java.util.UUID
+
+//import scala.slick.session.Database
+import Database.threadLocalSession
+import java.io.IOException
+
 class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with ScalateSupport with FileUploadSupport with FutureSupport with SlickSupport {
 
   configureMultipartHandling(MultipartConfig(maxFileSize = Some(3 * 1024 * 1024), fileSizeThreshold = Some(1024 * 1024 * 1024)))
@@ -64,15 +77,18 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
 
   }
 
-  get("/oms") {
+  //DATABASE UTILS
 
-    /*    <html>
-      <body>
-        <h1>Hello, world!</h1>
-        Say<a href="hello-scalate">hello to Scalate</a>
-        .
-      </body>
-    </html>*/
+  get("/create-table") {
+    db withSession {
+      (Workflows.ddl ++ Tags.ddl ++ WFTag.ddl).create
+    }
+  }
+
+  get("/drop-tables") {
+    db withSession {
+      (Workflows.ddl ++ Tags.ddl ++ WFTag.ddl).drop
+    }
   }
 
   def createFile(name: String): File = {
@@ -94,16 +110,34 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
   }
 
   // This method processes the uploaded file in some way.
-  def processFile(upload: FileItem) = {
+  def processFile(upload: FileItem, folderUuid: String) = {
 
-    val filePath: String = "/tmp/"
-    println(">> " + upload.getName)
-    try {
-      val file: File = new File(filePath + upload.getName)
-      upload.write(file)
+    // http://stackoverflow.com/questions/2637643/how-do-i-list-all-files-in-a-subdirectory-in-scala
+
+    val path: String = "/tmp/"
+
+    val (sucess: Boolean, folderFile: File) = try {
+      val folderFile = new File(path + folderUuid)
+      if (folderFile.exists()) {
+        (true, folderFile)
+      } else {
+        (folderFile.mkdirs(), folderFile)
+      }
+
     } catch {
       case e: IOException ⇒ println("Error " + e)
     }
+
+    if (sucess) {
+      try {
+        val file: File = new File(folderFile.getAbsolutePath + "/" + upload.getName)
+        println("try to write to >> " + file.getAbsolutePath)
+        upload.write(file)
+      } catch {
+        case e: IOException ⇒ println("Error " + e)
+      }
+    }
+
   }
 
   post("/uploadMole") {
@@ -114,9 +148,19 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
     val x = new AsyncResult() {
       val is = Future {
         try {
+
+          // tag identification
+          val tags: String = params.getOrElse("tags", halt(400))
+          println("tags ID : " + tags)
+
+          // try to create folder, copy file
           val document: FileItem = fileParams("file")
           println("file name: " + document.name)
-          processFile(document)
+
+          //generate UUID for wf folder creation
+          val uuid = UUID.randomUUID()
+          processFile(document, uuid.toString)
+
           //new GUISerializer(tempFile.toString).unserialize
           //ScenesManager.moleScenes.map { s ⇒ println("name : " + s.manager.name) }
         } catch {

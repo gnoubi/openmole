@@ -2,14 +2,41 @@
 test tag page
 #end
 
+// Pour les identifiants, tester :
+// http://jsfiddle.net/yuhxL/2/ cf http://stackoverflow.com/questions/9682410/how-do-i-store-extra-data-together-with-tag-it-tags
+
+
 <%@ val errors: List[String] = Nil %>
 #set (js)
 <%= unescape(for(error <- errors) yield "displayError(\"" +error+ "\");") %>
-#end
+    $(function(){
+
+    $("#singleFieldTags").tagit({
+      allowNewTags: false,
+      tagSource: function(search, showChoices) {
+        $.ajax({
+          url: "/repo/json",
+          dataType:   "json",
+          data: {q: search.term},
+          success: function(choices) {
+
+            showChoices(choices);
+            console.log(choices);
+          }
+        })},
+           beforeTagAdded: function(event, ui) {
+           //if ($.inArray(ui.tagLabel, search) == -1) {
+           //   $("#singleFieldTags").tagit("removeTagByLabel", ui.tagLabel);
+           // }
+            console.log(ui.tag);
+           }});
+
+    });#end
 
 <%@ val body: String %>
 <b><%= unescape(body)%></b>
 <form name="data" action="/repo/uploadMole" method="POST" enctype="multipart/form-data">
-    <input type="File" name="file"><br>
+    <input type="File" name="file"><br/>
+    <input name="tags" id="singleFieldTags" ><br/>
     <input type="Submit">
 </form>
