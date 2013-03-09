@@ -57,6 +57,7 @@
     <module>net.miginfocom.swing.miglayout</module>
     <module>org.scalatra</module>
     <module>ch.qos.logback</module>
+    <module>org.json4s</module>
     <module>org.slf4j</module>
     <module>org.eclipse.jetty</module>
     <module>com.jolbox.bonecp</module>

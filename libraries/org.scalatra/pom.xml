@@ -40,6 +40,17 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.scalatra</groupId>
+      <artifactId>scalatra-json_${scala.major.version}</artifactId>
+      <version>${lib.org.scalatra.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openmole</groupId>
+      <artifactId>org.json4s</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.openmole</groupId>
       <artifactId>org.slf4j</artifactId>
       <version>${project.version}</version>
