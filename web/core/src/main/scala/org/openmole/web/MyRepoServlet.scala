@@ -92,7 +92,7 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
   }
 
   get("/wf-by/:tag/") {
-    val tag:String = params.getOrElse("tag", halt(400))
+    val tag: String = params.getOrElse("tag", halt(400))
   }
 
   get("/insert-sample-tag") {
