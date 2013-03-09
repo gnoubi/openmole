@@ -27,11 +27,18 @@ import com.jolbox.bonecp._
 import java.sql.SQLException
 import java.util.UUID
 
+import org.json4s.{ DefaultFormats, Formats }
+
+// JSON handling support from Scalatra
+import org.scalatra.json._
+
 //import scala.slick.session.Database
 import Database.threadLocalSession
 import java.io.IOException
 
-class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with ScalateSupport with FileUploadSupport with FutureSupport with SlickSupport {
+class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with ScalateSupport with FileUploadSupport with FutureSupport with SlickSupport with JacksonJsonSupport {
+
+  protected implicit val jsonFormats: Formats = DefaultFormats
 
   configureMultipartHandling(MultipartConfig(maxFileSize = Some(3 * 1024 * 1024), fileSizeThreshold = Some(1024 * 1024 * 1024)))
 
@@ -70,8 +77,10 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
       val is = Future {
         val term = params.get("term")
         println("result = " + term)
-        val result = "[\"scala\", \"test\"]"
-        result
+        //val result = "[\"scala\", \"test\"]"
+        //result
+        Query(Tags)
+        //parsedBody.extract[Tag]
       }
     }
 
