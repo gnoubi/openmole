@@ -15,21 +15,29 @@ import java.util.UUID
 import Database.threadLocalSession
 import java.io.IOException
 
-object Workflows extends Table[(Int, String, String, UUID)]("WORKFLOWS") {
-  def id = column[Int]("WF_ID", O.PrimaryKey) // This is the primary key column
+case class Workflow(id: Option[Int], name: String, version: String, uuid: java.util.UUID)
+case class Tag(id: Option[Int], name: String, category: String)
+
+object Workflows extends Table[Workflow]("WORKFLOWS") {
+  def id = column[Int]("WF_ID", O.PrimaryKey, O.AutoInc) // This is the primary key column
   def name = column[String]("WF_NAME")
   def version = column[String]("WF_VERSION")
   def uuid = column[UUID]("WF_FOLDERUUID")
 
   // Every table needs a * projection with the same type as the table's type parameter
-  def * = id ~ name ~ version ~ uuid
+  def * = id.? ~ name ~ version ~ uuid <> (Workflow, Workflow.unapply _)
+  def forInsert = name ~ version ~ uuid <> ({ t ⇒ Workflow(None, t._1, t._2, t._3) },
+    { (u: Workflow) ⇒ Some((u.name, u.version, u.uuid)) })
 }
 
-object Tags extends Table[(Int, String)]("TAGS") {
-  def id = column[Int]("TAG_ID", O.PrimaryKey) // This is the primary key column
+object Tags extends Table[Tag]("TAGS") {
+  def id = column[Int]("TAG_ID", O.PrimaryKey, O.AutoInc) // This is the primary key column
   def name = column[String]("TAG_NAME")
+  def category = column[String]("TAG_CATEGORY")
   // Every table needs a * projection with the same type as the table's type parameter
-  def * = id ~ name
+  def * = id.? ~ name ~ category <> (Tag, Tag.unapply _)
+  def forInsert = name ~ category <> ({ t ⇒ Tag(None, t._1, t._2) },
+    { (u: Tag) ⇒ Some((u.name, u.category)) })
 }
 
 object WFTag extends Table[(Int, Int)]("WFTAG") {

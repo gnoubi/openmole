@@ -91,6 +91,24 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
     }
   }
 
+  get("/wf-by/:tag/") {
+    val tag:String = params.getOrElse("tag", halt(400))
+  }
+
+  get("/insert-sample-tag") {
+    db withSession {
+      // Insert some initial tags
+      val tagsId = Tags.forInsert returning Tags.id insertAll (
+        Tag(None, "0.8-alpha-1", "version"),
+        Tag(None, "0.8-alpha-2", "version"),
+        Tag(None, "0.8-alpha-3", "version"),
+        Tag(None, "0.8-alpha-4", "version"))
+
+      //println("tagID = " + tagsId.seq.mkString(" ; "))
+
+    }
+  }
+
   def createFile(name: String): File = {
 
     //    println(" system property = " + System.getProperty("user.dir"))
@@ -137,7 +155,6 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
         case e: IOException ⇒ println("Error " + e)
       }
     }
-
   }
 
   post("/uploadMole") {
