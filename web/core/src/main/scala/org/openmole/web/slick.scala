@@ -10,6 +10,7 @@ import com.jolbox.bonecp._
 //import scala.slick.session.Database
 import Database.threadLocalSession
 import java.io.IOException
+import java.util.UUID
 
 case class Workflow(id: Option[Int], name: String, version: String, uuid: java.util.UUID)
 case class Tag(id: Option[Int], name: String, category: String)
