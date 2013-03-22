@@ -21,12 +21,26 @@
   <name>${project.artifactId}</name>
   <!--optional. Use this property to tune the exported packages-->
   <properties>
+    <libraries.export.packages>org.json4s.*</libraries.export.packages>
     <eclipse.buddypolicy>global</eclipse.buddypolicy>
+    <embed-dep>*;groupId=!org.scala-lang|org.openmole;type=!pom;inline=true</embed-dep>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.json4s</groupId>
-      <artifactId>json4s-jackson_2.10</artifactId>
+      <artifactId>json4s-jackson_${scala.major.version}</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.json4s</groupId>
+      <artifactId>json4s-core_${scala.major.version}</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.json4s</groupId>
+      <artifactId>json4s-native_${scala.major.version}</artifactId>
       <version>3.1.0</version>
       <scope>provided</scope>
     </dependency>

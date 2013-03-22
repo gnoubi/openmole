@@ -21,8 +21,9 @@
   <name>${project.artifactId}</name>
   <!--optional. Use this property to tune the exported packages-->
   <properties>
-    <libraries.export.packages>org.scalatra.*,org.fusesource.*</libraries.export.packages>
+    <libraries.export.packages>org.scalatra.*,org.fusesource.*,org.json4s.*</libraries.export.packages>
     <eclipse.buddypolicy>global</eclipse.buddypolicy>
+    <!--<embed-dep>*;groupId=!org.scala-lang|org.openmole|org.openmole.web|org.slf4j|org.json4s;type=!pom;inline=true</embed-dep>-->
     <embed-dep>*;groupId=!org.scala-lang|org.openmole|org.openmole.web|org.slf4j;type=!pom;inline=true</embed-dep>
   </properties>
   <dependencies>

@@ -40,6 +40,11 @@
       <artifactId>ch.qos.logback</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!--    <dependency>
+      <groupId>org.openmole</groupId>
+      <artifactId>org.json4s</artifactId>
+      <version>${project.version}</version>
+    </dependency>-->
     <dependency>
       <groupId>org.openmole.core</groupId>
       <artifactId>org.openmole.core.serializer</artifactId>
