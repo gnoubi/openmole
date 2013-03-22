@@ -7,7 +7,7 @@
   <parent>
     <artifactId>openmole</artifactId>
     <groupId>org.openmole.core</groupId>
-    <version>0.8-alpha4</version>
+    <version>0.8.0-SNAPSHOT</version>
   </parent>
   <artifactId>misc</artifactId>
   <!-- ************************************************************* -->
@@ -34,8 +34,9 @@
     <module>org.openmole.misc.osgi</module>
     <module>org.openmole.misc.replication</module>
     <module>org.openmole.misc.sftpserver</module>
+    <module>org.openmole.misc.macros</module>
   </modules>
   <properties>
-    <include></include>
+    <include />
   </properties>
 </project>
