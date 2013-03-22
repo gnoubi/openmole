@@ -42,5 +42,5 @@ trait Libraries extends Defaults {
 
   lazy val slf4j = OsgiProject("org.slf4j") settings (libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.2")
   
-  lazy val json4s = OsgiProject("org.json4s") settings (libraryDependencies += "org.json4s" % "json4s-jackson_2.10" % "3.1.0")
+  lazy val json4s = OsgiProject("org.json4s", privatePackages = Seq("com.fasterxml.*")) settings (libraryDependencies += "org.json4s" %% "json4s-jackson" % "3.1.0")
 }
