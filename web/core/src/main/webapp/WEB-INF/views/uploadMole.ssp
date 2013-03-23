@@ -31,7 +31,8 @@ test tag page
             console.log(ui.tag);
            }});
 
-    });#end
+    });
+    #end
 
 <%@ val body: String %>
 <b><%= unescape(body)%></b>

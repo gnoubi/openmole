@@ -27,6 +27,8 @@ import com.jolbox.bonecp._
 import java.sql.SQLException
 import java.util.UUID
 
+import org.openmole.web.Tags
+
 import org.json4s.{ DefaultFormats, Formats }
 
 // JSON handling support from Scalatra
@@ -46,6 +48,8 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
 
   val digest = MessageDigest.getInstance("MD5")
   def md5(t: String): String = digest.digest(t.getBytes).map("%02x".format(_)).mkString
+
+
 
   def recursiveListFiles(f: File, r: Regex): Array[File] = {
     val these = f.listFiles
@@ -73,13 +77,22 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
 
   get("/json") {
     contentType = "application/json"
+
+    /*before() {
+      contentType = formats("json")
+    } */
+
     new AsyncResult() {
       val is = Future {
-        val term = params.get("term")
-        println("result = " + term)
+        //val term = params.get("term")
+        //println("result = " + term)
         //val result = "[\"scala\", \"test\"]"
         //result
-        Query(Tags)
+        db withSession {
+          val result = Query(Tags).list()
+          println("RESULT = " + result)
+          result
+        }
         //parsedBody.extract[Tag]
       }
     }
