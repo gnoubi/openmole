@@ -31,5 +31,5 @@ trait Web extends Libraries with Defaults {
         //"org.openmole" % "ch.qos.logback" % v
         //"org.openmole" % "com.jolbox.bonecp" % v
       )}
-    ) dependsOn(h2, jetty, slick, logback, scalatra, bonecp)
+    ) dependsOn(h2, jetty, slick, logback, scalatra, bonecp, json4s)
 }

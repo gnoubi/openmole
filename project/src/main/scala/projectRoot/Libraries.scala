@@ -27,7 +27,7 @@ trait Libraries extends Defaults {
     buddyPolicy = Some("global"),
     exports = Seq("org.scalatra.*, org.fusesource.*"),
     privatePackages = Seq("!scala.*","!org.slf4j.*","!org.json4s.*", "*")) settings
-    (libraryDependencies ++= Seq("org.scalatra" %% "scalatra" % "2.2.1-SNAPSHOT", "org.scalatra" %% "scalatra-scalate" % "2.2.1-SNAPSHOT", "org.scalatra" %% "scalatra-json" % "2.2.1-SNAPSHOT")) dependsOn(slf4j, json4s)
+    (libraryDependencies ++= Seq("org.scalatra" %% "scalatra" % "2.2.1-SNAPSHOT", "org.scalatra" %% "scalatra-scalate" % "2.2.1-SNAPSHOT", "org.scalatra" %% "scalatra-json" % "2.2.1-SNAPSHOT")) dependsOn(slf4j)
 
   lazy val logback = OsgiProject("ch.qos.logback", exports = Seq("ch.qos.logback.*", "org.slf4j.impl")) settings (libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.9")
   /*Project(id = "ch-qos-logback",
@@ -42,5 +42,5 @@ trait Libraries extends Defaults {
 
   lazy val slf4j = OsgiProject("org.slf4j") settings (libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.2")
   
-  lazy val json4s = OsgiProject("org.json4s", privatePackages = Seq("com.fasterxml.*", "com.thoughtworks.paranamer.*")) settings (libraryDependencies += "org.json4s" %% "json4s-jackson" % "3.1.0")
+  lazy val json4s = OsgiProject("org.json4s", exports = Seq("org.json4s.*","com.fasterxml.*", "com.thoughtworks.paranamer.*")) settings (libraryDependencies += "org.json4s" %% "json4s-jackson" % "3.1.0")
 }
