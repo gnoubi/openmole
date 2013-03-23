@@ -9,7 +9,7 @@ trait Application extends Web with Libraries {
   private implicit val org = organization := "org.openmole.ui"
   private implicit val dir = file("application")
   lazy val application = Project("application", file("application")) aggregate(plugins, openmoleui,
-    openmolePlugins, openmoleGuiPlugins, openmoleResources)
+    openmolePlugins, openmoleGuiPlugins, openmoleResources, openMoleDB)
 
   private lazy val pluginDependencies = libraryDependencies <++= version {
     v =>
@@ -133,26 +133,28 @@ trait Application extends Web with Libraries {
 
   lazy val openmoleui = OsgiProject("org.openmole.ui", singleton = true) settings (pluginDependencies) dependsOn (webCore)
 
-  lazy val plugins = AssemblyProject("package", "plugins",
+  lazy val plugins = AssemblyProject("package", "assembly/plugins",
     Map("""org\.eclipse\.equinox\.launcher.*\.jar""".r -> {s => "org.eclipse.equinox.launcher.jar"},
       """org\.eclipse\.(core|equinox|osgi)""".r -> {s => s.replaceFirst("-","_")} )
   ) settings (pluginDependencies,
     libraryDependencies <++= (version) {v =>
       Seq("org.openmole.ui" %% "org.openmole.ui" % v exclude("org.eclipse.equinox","*"),
         "org.openmole.web" %% "org.openmole.web.core" % v)
-    }
-  )
-
-  lazy val openmolePlugins = AssemblyProject("package", "openmole-plugins") settings (openmolePluginDependencies,
-      ignoreTransitive := true) settings (net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
-
-  lazy val openmoleGuiPlugins = AssemblyProject("package", "openmole-plugins-gui") settings (openmoleGuiPluginDependencies)
-
-  lazy val openmoleResources = AssemblyProject("package", "") settings
-    (resourceDirectory := file("application/resources"), copyResTask, assemble <<= assemble dependsOn (resourceAssemble))
-
-  lazy val openMoleDB = AssemblyProject("Db-proj", "plugins") settings (libraryDependencies ++=
-    Seq("org.openmole.core" % "org.openmole.runtime.dbserver" % "0.8.0-SNAPSHOT"))
+    }, dependencyFilter := DependencyFilter.fnToModuleFilter(_.name != "scala-library"))
 
 
+  lazy val openmolePlugins = AssemblyProject("package", "assembly/openmole-plugins") settings (openmolePluginDependencies,
+      ignoreTransitive := true, dependencyFilter := DependencyFilter.fnToModuleFilter(_.name != "scala-library"))
+
+  lazy val openmoleGuiPlugins = AssemblyProject("package", "assembly/openmole-plugins-gui") settings (openmoleGuiPluginDependencies,
+    dependencyFilter := DependencyFilter.fnToModuleFilter(_.name != "scala-library"))
+
+  lazy val openmoleResources = AssemblyProject("package", "assembly") settings
+    (resourceDirectory := file("application/resources"), copyResTask, assemble <<= assemble dependsOn (resourceAssemble),
+      dependencyFilter := DependencyFilter.fnToModuleFilter(_.name != "scala-library"))
+
+  lazy val openMoleDB = AssemblyProject("package", "assembly/dbserver/lib") settings (libraryDependencies ++=
+    Seq("org.openmole.core" % "org.openmole.runtime.dbserver" % "0.8.0-SNAPSHOT"),
+    copyResTask, resourceDirectory := file("application/db-resources"), assemble <<= assemble dependsOn (resourceAssemble),
+    resourceOutDir := Option("assembly/dbserver/bin"))
 }
