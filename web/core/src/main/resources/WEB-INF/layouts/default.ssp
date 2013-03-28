@@ -12,8 +12,13 @@
       <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
       <link  href="http://fonts.googleapis.com/css?family=Terminal+Dosis+Light:regular" rel="stylesheet" type="text/css" >
       <LINK href="/css/style.css" rel="stylesheet" type="text/css">
+      <LINK href="/css/jquery.tagit.css" rel="stylesheet" type="text/css">
+      <LINK rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
       <script type="text/javascript" src="/js/jquery-1.9.0.js"></script>
       <script type="text/javascript" src="/js/errorHandler.js"></script>
+      <script type="text/javascript" src="/js/jquery-ui-1.10.1.min.js"></script>
+      <script type="text/javascript" src="/js/tag-it.js" type="text/javascript" charset="utf-8"></script>
+
     <title><%= unescape(title)%></title>
     <meta content="">
   </head>

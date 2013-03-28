@@ -2,9 +2,11 @@
 test tag page
 #end
 
-// Pour les identifiants, tester :
-// http://jsfiddle.net/yuhxL/2/ cf http://stackoverflow.com/questions/9682410/how-do-i-store-extra-data-together-with-tag-it-tags
-
+<%--
+ Pour les identifiants, tester :
+http://jsfiddle.net/yuhxL/2/
+cf http://stackoverflow.com/questions/9682410/how-do-i-store-extra-data-together-with-tag-it-tags
+ --%>
 
 <%@ val errors: List[String] = Nil %>
 #set (js)
@@ -17,7 +19,9 @@ test tag page
         $.ajax({
           url: "/repo/json",
           dataType:   "json",
-          data: {q: search.term},
+          data: {q: search.term,
+                 featureClass: "P",
+                 maxRows: 25},
           success: function(choices) {
 
             showChoices(choices);

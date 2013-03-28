@@ -89,7 +89,7 @@ class MyRepoServlet(val system: ActorSystem) extends ScalatraServlet with Scalat
         //val result = "[\"scala\", \"test\"]"
         //result
         db withSession {
-          val result = Query(Tags).list()
+          val result = Query(Tags).list().toSeq
           println("RESULT = " + result)
           result
         }
