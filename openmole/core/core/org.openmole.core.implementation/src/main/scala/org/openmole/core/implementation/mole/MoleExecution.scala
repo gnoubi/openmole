@@ -48,27 +48,9 @@ import org.openmole.core.model.execution.Environment
 import collection.mutable
 import java.io.File
 import org.openmole.core.serializer.SerializerService
+import org.openmole.core.model.mole
 
 object MoleExecution extends Logger {
-
-  type PartialMoleExecution = (Context, ExecutionContext) ⇒ MoleExecution
-
-  def partial(
-    mole: IMole,
-    sources: Iterable[(ICapsule, ISource)] = Iterable.empty,
-    hooks: Iterable[(ICapsule, IHook)] = Iterable.empty,
-    selection: Map[ICapsule, EnvironmentSelection] = Map.empty,
-    grouping: Map[ICapsule, Grouping] = Map.empty,
-    profiler: Profiler = Profiler.empty,
-    seed: Long = Workspace.newSeed): PartialMoleExecution =
-    new MoleExecution(
-      mole,
-      sources.groupBy { case (c, _) ⇒ c }.map { case (c, ss) ⇒ c -> ss.map(_._2) }.withDefault(_ ⇒ List.empty),
-      hooks.groupBy { case (c, _) ⇒ c }.map { case (c, hs) ⇒ c -> hs.map { _._2 } }.withDefault(_ ⇒ List.empty),
-      selection,
-      grouping,
-      profiler,
-      seed)(_, _)
 
   def apply(
     mole: IMole,
@@ -80,18 +62,16 @@ object MoleExecution extends Logger {
     implicits: Context = Context.empty,
     seed: Long = Workspace.newSeed,
     executionContext: ExecutionContext = ExecutionContext.local) =
-    partial(
+    PartialMoleExecution(
       mole,
       sources,
       hooks,
       selection,
       grouping,
       profiler,
-      seed)(implicits, executionContext)
+      seed).toExecution(implicits, executionContext)
 
 }
-
-import MoleExecution._
 
 class MoleExecution(
     val mole: IMole,

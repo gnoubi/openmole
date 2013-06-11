@@ -21,15 +21,17 @@ trait Assembly { self: BuildSystemDefaults ⇒
 
   //To add zipping to project, add zipProject to its settings
   lazy val zipProject: Seq[Project.Setting[_]] = Seq(
-    zipFiles <++= (copyDependencies) map { rA ⇒ Seq(rA) },
+    zipFiles <+= (copyDependencies) map { f ⇒ f },
     zip <<= (zipFiles, streams, target, tarGZName) map zipImpl,
+    tarGZName := None,
 
     assemble <<= assemble dependsOn zip
   )
 
   lazy val urlDownloadProject: Seq[Project.Setting[_]] = Seq(
-    zipFiles <+= (downloadUrls) map { f ⇒ f }, //Adds the result of the url download task to what should be zipped.
-    downloadUrls <<= (urls) map urlDownloader
+    urls := Nil,
+    downloadUrls <<= (urls, streams, target) map urlDownloader,
+    assemble <<= assemble dependsOn downloadUrls
   )
 
   lazy val copyResProject: Seq[Project.Setting[_]] = Seq(
@@ -71,7 +73,6 @@ trait Assembly { self: BuildSystemDefaults ⇒
       assemblyPath <<= target / "assemble",
       install := true,
       installRemote := true,
-      tarGZName := None,
       zipFiles := Nil,
       outDir := outputDir,
       resourceOutDir := None,
@@ -88,7 +89,7 @@ trait Assembly { self: BuildSystemDefaults ⇒
 
     def findFiles(f: File): Set[File] = if (f.isDirectory) (f.listFiles map findFiles flatten).toSet else Set(f)
 
-    def findLeastCommonPath(f1: File, f2: File): File = file((f1.getAbsolutePath zip f2.getAbsolutePath) takeWhile { case (a, b) ⇒ a == b } map (_._1) mkString)
+    def findLeastCommonPath(f1: File, f2: File): File = file((f1.getCanonicalPath zip f2.getCanonicalPath) takeWhile { case (a, b) ⇒ a == b } map (_._1) mkString)
 
     val files: Set[File] = (targetFolders map findFiles flatten) toSet
 
@@ -122,7 +123,33 @@ trait Assembly { self: BuildSystemDefaults ⇒
     fn(files).head
   }
 
-  def urlDownloader(urls: Seq[URL]): File = {
-    dir
+  def urlDownloader(urls: Seq[(URL, File)], s: TaskStreams, targetDir: File) = {
+    val cache = targetDir / "url-cache"
+
+    val mOs = managed(new BufferedOutputStream(new FileOutputStream(cache)))
+
+    val hashes = (urls map { case (url, _) ⇒ url.toString.map(_.toByte) } flatten).toIterator
+
+    val alreadyCached = if (cache.exists) {
+      (managed(Source.fromFile(cache)(io.Codec.ISO8859)).map(_.iter zip hashes forall { case (n, cached) ⇒ n.toByte == cached }).opt getOrElse false) && urls.forall(_._2.exists())
+    }
+    else {
+      false
+    }
+
+    if (alreadyCached) {
+      Seq.empty
+    }
+    else {
+      mOs.foreach { case os ⇒ hashes.foreach(os.write(_)) }
+      urls.map {
+        case (url, file) ⇒
+          s.log.info("Downloading " + url + " to " + file)
+          val os = new BufferedOutputStream(new FileOutputStream(file))
+          try BasicIO.transferFully(url.openStream, os)
+          finally os.close
+          file
+      }
+    }
   }
 }

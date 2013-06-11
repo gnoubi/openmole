@@ -39,6 +39,8 @@ import scala.collection.JavaConversions._
 import scala.ref.WeakReference
 import scala.Some
 import scala.Some
+import fr.iscpif.gridscale.authentication._
+import java.io.File
 
 object GliteAuthentication extends Logger {
 
@@ -114,6 +116,7 @@ object GliteAuthentication extends Logger {
   }
 
   def getVOMS(vo: String): Option[String] = getVOMS(vo, xml.XML.loadFile(voCards))
+  def getVMOSOrError(vo: String) = getVOMS(vo).getOrElse(throw new UserBadDataError(s"ID card for VO $vo not found."))
 
   def getVOMS(vo: String, x: xml.Node) = {
     import xml._
@@ -137,76 +140,45 @@ object GliteAuthentication extends Logger {
   def update(a: GliteAuthentication) = Workspace.persistentList(classOf[GliteAuthentication])(0) = a
   def apply() = Workspace.persistentList(classOf[GliteAuthentication])(0)
   def get = Workspace.persistentList(classOf[GliteAuthentication]).get(0)
-}
 
-trait GliteAuthentication {
-
-  def apply(
+  def initialise(a: GliteAuthentication)(
     serverURL: String,
     voName: String,
     proxyFile: File,
     lifeTime: Int,
-    fqan: Option[String]): GlobusGSSCredentialImpl
+    fqan: Option[String]) =
+    a match {
+      case a: P12Certificate ⇒
+        VOMSAuthentication.setCARepository(GliteAuthentication.CACertificatesDir)
+        val (_serverURL, _voName, _proxyFile, _lifeTime, _fqan) = (serverURL, voName, proxyFile, lifeTime, fqan)
+        new P12VOMSAuthentication {
+          val certificate = a.certificate
+          val serverURL = _serverURL
+          val voName = _voName
+          val proxyFile = _proxyFile
+          val lifeTime = _lifeTime
+          val password = a.password
+          override val fqan = _fqan
+        }
+      case a: PEMCertificate ⇒
+        VOMSAuthentication.setCARepository(GliteAuthentication.CACertificatesDir)
+        val (_serverURL, _voName, _proxyFile, _lifeTime, _fqan) = (serverURL, voName, proxyFile, lifeTime, fqan)
+        new PEMVOMSAuthentication {
+          val certificate = a.certificate
+          val key = a.key
+          val serverURL = _serverURL
+          val voName = _voName
+          val proxyFile = _proxyFile
+          val lifeTime = _lifeTime
+          val password = a.password
+          override val fqan = _fqan
+        }
+      case a: ProxyFile ⇒
+        new ProxyFileAuthentication {
+          val proxy = a.proxy
+        }
+    }
 
 }
 
-//class GliteAuthentication(
-//  val voName: String,
-//  val vomsURL: String,
-//  val myProxy: Option[MyProxy],
-//  val fqan: String) extends Authentication {
-//
-//  import GliteAuthentication.{ logger, addContext }
-//
-//  @transient private var _proxyExpiresTime = Long.MaxValue
-//
-//  val CACertificatesDir: File = GliteAuthentication.CACertificatesDir
-//
-//  override def key = "glite:" + (voName, vomsURL).toString
-//
-//  override def expires = _proxyExpiresTime
-//
-//  override def initialize(local: Boolean): Unit = {
-//    if (!local) {
-//      val globusProxy =
-//        if (System.getenv.containsKey("X509_USER_PROXY") && new File(System.getenv.get("X509_USER_PROXY")).exists) System.getenv.get("X509_USER_PROXY")
-//      else throw new InternalProcessingError("The X509_USER_PROXY environment variable is not defined or point to an inexisting file.")
-//      myProxy match {
-//        case Some(myProxy) ⇒ {
-//            val ctx = JSAGASessionService.createContext
-//            ctx.setAttribute(Context.TYPE, "VOMSMyProxy")
-//            ctx.setAttribute(Context.USERPROXY, globusProxy)
-//            ctx.setAttribute(Context.CERTREPOSITORY, CACertificatesDir.getCanonicalPath)
-//            ctx.setAttribute(VOMSContext.MYPROXYUSERID, myProxy.userId)
-//            ctx.setAttribute(VOMSContext.MYPROXYPASS, myProxy.pass)
-//            ctx.setAttribute(VOMSContext.MYPROXYSERVER, myProxy.url)
-//            ctx.setAttribute(VOMSContext.DELEGATIONLIFETIME, GliteAuthentication.getTimeString)
-//            ctx.setAttribute(VOMSContext.VOMSDIR, "")
-//            init(ctx, false)
-//          }
-//        case None ⇒
-//          val (ctx, expires) = new GlobusProxyFile(globusProxy).init(this)
-//          init(ctx, expires)
-//      }
-//    } else {
-//      val auth = Workspace.persistentList(classOf[GliteAuthenticationMethod]).headOption match {
-//        case Some((i, a)) ⇒ a
-//        case None ⇒ throw new UserBadDataError("Preferences not set for grid authentication")
-//      }
-//
-//      val (ctx, expires) = auth.init(this)
-//      init(ctx, expires)
-//    }
-//
-//  }
-//
-//  def reinit(context: Context, expires: Boolean) = {
-//    addContext(context)
-//    if (expires) _proxyExpiresTime = System.currentTimeMillis + context.getAttribute(Context.LIFETIME).toLong * 1000
-//  }
-//
-//  def init(context: Context, expires: Boolean) = {
-//    reinit(context, expires)
-//    Updater.delay(new ProxyChecker(context, new WeakReference(this), expires))
-//  }
-//}
+trait GliteAuthentication

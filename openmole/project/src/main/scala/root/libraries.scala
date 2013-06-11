@@ -80,7 +80,10 @@ object Libraries extends Defaults {
 
   lazy val jodaTime = OsgiProject("org.joda.time") settings (libraryDependencies += "joda-time" % "joda-time" % "1.6")
 
-  lazy val gnuCrypto = OsgiProject("org.gnu.crypto") settings (libraryDependencies += "org.gnu.crypto" % "gnu-crypto" % "2.0.1")
+  lazy val gnuCrypto = OsgiProject("org.gnu.crypto") settings (
+    libraryDependencies += "org.gnu.crypto" % "gnu-crypto" % "2.0.1",
+    exportPackage += "gnu.crypto.*"
+  )
 
   lazy val jasypt = OsgiProject("org.jasypt.encryption", exports = Seq("org.jasypt.*")) settings (libraryDependencies += "org.jasypt" % "jasypt" % "1.8")
 
@@ -129,12 +132,12 @@ object Libraries extends Defaults {
 
   lazy val gridscale = OsgiProject("fr.iscpif.gridscale",
     exports = Seq("fr.iscpif.gridscale.*", "net.schmizz.sshj.*", "org.glite.*", "org.globus.*", "org.ogf.*"),
-    privatePackages = Seq("!scala.*", "*")) settings
-    (libraryDependencies += "fr.iscpif.gridscale" % "gridscale" % "1.39",
+    privatePackages = Seq("!scala.*", "!org.slf4j.*", "*")) settings
+    (libraryDependencies += "fr.iscpif.gridscale" % "gridscale" % "1.45-SNAPSHOT",
       OsgiKeys.embeddedJars <<= Keys.externalDependencyClasspath in Compile map { deps ⇒
         deps filter (d ⇒ d.data.getName startsWith "bcprov") map (d ⇒ d.data)
       } //TODO make this easier to do using updateReport and filters.
-    )
+    ) dependsOn (slf4j)
 
   lazy val jsyntaxpane = OsgiProject("jsyntaxpane", privatePackages = Seq("!scala.*", "*")) settings
     (libraryDependencies += "jsyntaxpane" % "jsyntaxpane" % "0.9.6")
@@ -149,7 +152,7 @@ object Libraries extends Defaults {
     (libraryDependencies ++= Seq("org.netbeans.api" % "org-netbeans-api-visual" % "RELEASE73",
       "org.netbeans.api" % "org-netbeans-modules-settings" % "RELEASE73"))
 
-  lazy val mgo = OsgiProject("fr.iscpif.mgo") settings (libraryDependencies <+= scalaVersion { sv ⇒ "fr.iscpif" % ("mgo_" + sv) % "1.58" })
+  lazy val mgo = OsgiProject("fr.iscpif.mgo") settings (libraryDependencies += "fr.iscpif" %% "mgo" % "1.59")
 
   lazy val opencsv = OsgiProject("au.com.bytecode.opencsv") settings (libraryDependencies += "net.sf.opencsv" % "opencsv" % "2.0")
 
