@@ -1,4 +1,4 @@
-Copyright (C) 2013 Mathieu Leclaire
+/*Copyright (C) 2013 Mathieu Leclaire
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,16 @@ Copyright (C) 2013 Mathieu Leclaire
 
 package org.openmole.plugin.method.abc
 
-class ABCTask extends Task {
+import org.openmole.core.implementation.task.Task
+import org.openmole.core.model.data._
+import org.openmole.core.model.task.PluginSet
+import org.openmole.core.model.task._
+import org.openmole.misc.tools.math._
 
-  override def process(context: Context): Context = {
-   }
+object ABCTask {
+  def apply(name: String)(implicit plugins: PluginSet) {}
+}
 
+class ABCTask(val name: String) {
+  println(name)
 }

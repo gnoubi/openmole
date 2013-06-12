@@ -1,4 +1,4 @@
-Copyright (C) 2013 Mathieu Leclaire
+/*Copyright (C) 2013 Mathieu Leclaire
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,26 @@ Copyright (C) 2013 Mathieu Leclaire
 
 package org.openmole.plugin.method.abc
 
-class ABCTask extends Sampling {
+import org.openmole.core.model.data._
+import org.openmole.core.model.sampling._
 
-   override def build(context: Context) = {
-   }
+object ABCSampling {
+
+  def apply(samplings: Sampling*) = new ABCSampling(samplings: _*)
+}
+
+class ABCSampling(val samplings: Sampling*) extends Sampling {
+
+  override def inputs = DataSet.empty ++ samplings.flatMap { _.inputs }
+  override def prototypes: Iterable[Prototype[_]] = samplings.flatMap { _.prototypes }
+
+  override def build(context: Context): Iterator[Iterable[Variable[_]]] =
+    if (samplings.isEmpty) Iterator.empty
+    else
+      samplings.tail.foldLeft(samplings.head.build(context)) {
+        (a, b) ⇒ combine(a, b, context)
+      }
+
+  def combine(s1: Iterator[Iterable[Variable[_]]], s2: Sampling, context: Context) =
+    for (x ← s1; y ← s2.build(context ++ x)) yield x ++ y
 }
