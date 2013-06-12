@@ -59,7 +59,7 @@ object Libraries extends Defaults {
   lazy val icu4j = OsgiProject("com.ibm.icu") settings (libraryDependencies += "com.ibm.icu" % "icu4j" % "4.0.1")
 
   lazy val groovy = OsgiProject("org.codehaus.groovy", buddyPolicy = Some("global"), exports = Seq("groovy.*", "org.codehaus.*"),
-    privatePackages = Seq("!scala.*,*")) settings (libraryDependencies ++= Seq("org.codehaus.groovy" % "groovy-all" % "2.0.5",
+    privatePackages = Seq("!scala.*,*")) settings (libraryDependencies ++= Seq("org.codehaus.groovy" % "groovy-all" % "2.1.4",
       "org.fusesource.jansi" % "jansi" % "1.2.1"))
 
   lazy val objenesis = OsgiProject("org.objenesis") settings (libraryDependencies += "org.objenesis" % "objenesis" % "1.2")
@@ -132,12 +132,12 @@ object Libraries extends Defaults {
 
   lazy val gridscale = OsgiProject("fr.iscpif.gridscale",
     exports = Seq("fr.iscpif.gridscale.*", "net.schmizz.sshj.*", "org.glite.*", "org.globus.*", "org.ogf.*"),
-    privatePackages = Seq("!scala.*", "!org.slf4j.*", "*")) settings
-    (libraryDependencies += "fr.iscpif.gridscale" % "gridscale" % "1.45-SNAPSHOT",
+    privatePackages = Seq("!scala.*", "!org.slf4j.*", "!org.apache.log4j", "*")) settings
+    (libraryDependencies += "fr.iscpif.gridscale" % "gridscale" % "1.45",
       OsgiKeys.embeddedJars <<= Keys.externalDependencyClasspath in Compile map { deps ⇒
         deps filter (d ⇒ d.data.getName startsWith "bcprov") map (d ⇒ d.data)
       } //TODO make this easier to do using updateReport and filters.
-    ) dependsOn (slf4j)
+    ) dependsOn (slf4j, Apache.log4j)
 
   lazy val jsyntaxpane = OsgiProject("jsyntaxpane", privatePackages = Seq("!scala.*", "*")) settings
     (libraryDependencies += "jsyntaxpane" % "jsyntaxpane" % "0.9.6")
