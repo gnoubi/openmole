@@ -36,10 +36,11 @@ object LHS {
 
 sealed class LHS(val samples: Int, val factors: Factor[Double, Domain[Double] with Bounds[Double]]*) extends Sampling {
 
+  override def inputs = DataSet(factors.flatMap(_.inputs))
   override def prototypes = factors.map { _.prototype }
 
   override def build(context: Context): Iterator[Iterable[Variable[Double]]] = {
-    val rng = newRNG(context.valueOrException(openMOLESeed))
+    val rng = newRNG(context(openMOLESeed))
 
     (0 until samples).map {
       _ ⇒
