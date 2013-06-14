@@ -19,7 +19,7 @@ object Libraries extends Defaults {
   lazy val all = Project(id = "openmole-libraries",
     base = file("libraries")) aggregate (jetty, scalatra, logback, h2, bonecp, slick, slf4j, xstream, icu4j, groovy,
       objenesis, scalaLang, Apache.all, jodaTime, gnuCrypto, db4o, jasypt, robustIt, netlogo4, netlogo5, opencsv,
-      netlogo4_noscala, netlogo5_noscala, gridscale, guava, jsyntaxpane, gral, miglayout, netbeans, mgo, jline, jacksonJson)
+      netlogo4_noscala, netlogo5_noscala, gridscale, guava, jsyntaxpane, gral, miglayout, netbeans, mgo, jline, jacksonJson, breeze)
 
   lazy val jetty = OsgiProject("org.eclipse.jetty", exports = Seq("org.eclipse.jetty.*", "javax.*")) settings
     (libraryDependencies ++= Seq("org.eclipse.jetty" % "jetty-webapp" % "8.1.8.v20121106",
@@ -157,4 +157,6 @@ object Libraries extends Defaults {
   lazy val opencsv = OsgiProject("au.com.bytecode.opencsv") settings (libraryDependencies += "net.sf.opencsv" % "opencsv" % "2.0")
 
   lazy val jline = OsgiProject("net.sourceforge.jline") settings (libraryDependencies += "jline" % "jline" % "0.9.94", exportPackage := Seq("jline.*"))
+
+  lazy val breeze = OsgiProject("org.scalanlp.breeze.math") settings (libraryDependencies += "org.scalanlp" % "breeze-math" % "0.3", exportPackage := Seq("breeze.linalg"))
 }

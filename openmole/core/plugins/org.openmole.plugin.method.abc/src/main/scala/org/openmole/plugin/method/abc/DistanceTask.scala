@@ -19,10 +19,7 @@ package org.openmole.plugin.method.abc
 import org.openmole.core.implementation.task.Task
 import org.openmole.core.model.data._
 import org.apache.commons.math3.stat.descriptive._
-import org.openmole.core.model.task.PluginSet
 import org.openmole.core.model.task._
-import org.openmole.misc.tools.math._
-import org.openmole.core.model.data
 
 sealed abstract class DistanceTask(val name: String, implicit val plugins: PluginSet) extends Task {
 
