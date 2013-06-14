@@ -112,14 +112,11 @@ class MoleRunner(val system: ActorSystem) extends ScalatraServlet with SlickSupp
 
     val a = Validation(mole.mole, sources = mole.sources, hooks = mole.hooks)
     val mIS = a.map(_ match {
-<<<<<<< HEAD
-      case x: MissingInput ⇒ x
-      case _               ⇒ throw new Exception("malformed partial mole")
-=======
+      case x: MissingInput       ⇒ x
+      case _                     ⇒ throw new Exception("malformed partial mole")
       case x: MissingInput       ⇒ x
       case y: MissingSourceInput ⇒ MissingInput(y.slot, y.input)
       case _                     ⇒ throw new Exception("malformed partial mole")
->>>>>>> ed39dd5a05dbe296d877e82ca25110a08cdfece5
     })
 
     val c = mIS.map { mI ⇒
