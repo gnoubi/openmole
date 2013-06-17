@@ -16,21 +16,18 @@
 
 package org.openmole.plugin.method.abc
 
-import org.openmole.core.implementation.task.Task
 import org.openmole.core.model.data._
-import scala.collection.immutable.List
 
-sealed abstract class SelectTask extends Task {
+trait Selection <: SummaryStats with Thetas {
 
-  val thetas: List[Double]
-  val distances: List[Double]
-  val summaryStats: List[List[Double]]
-  val ratio: Double
-  val proto: Prototype[List[(Double, Double, List[Double])]]
+  def ratio: Double
 
-  def process(context: Context) = Context {
-    val selected = (distances, thetas, summaryStats).zipped.toList.sortWith(_._1 < _._1).slice(0, 1 + (ratio * thetas.length).toInt)
-    Variable(proto, selected)
+  def select(context: Context, distances: Seq[Double]) = {
+    val summaryStatsValue = summaryStatsMatrix(context)
+    val thetasValue = thetasMatrix(context)
+
+    def sorted = (distances, thetasValue, summaryStatsValue).zipped.toList.sortWith(_._1 < _._1)
+    sorted.slice(0, 1 + (ratio * thetas.length).toInt)
   }
 
 }

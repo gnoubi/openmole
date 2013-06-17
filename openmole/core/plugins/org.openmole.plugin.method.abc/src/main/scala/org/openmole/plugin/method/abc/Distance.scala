@@ -16,27 +16,22 @@
 
 package org.openmole.plugin.method.abc
 
-import org.openmole.core.implementation.task.Task
 import org.openmole.core.model.data._
 import org.apache.commons.math3.stat.descriptive._
-import org.openmole.core.model.task._
+import org.openmole.misc.exception.UserBadDataError
 
-sealed abstract class DistanceTask(val name: String, implicit val plugins: PluginSet) extends Task {
+trait Distance <: SummaryStats {
 
-  val thetas: List[Double]
-  val summaryStats: List[List[Double]]
-  val summaryStatsTarget: List[Double]
-  val proto: Prototype[List[Double]]
+  def summaryStatsTarget: Seq[Double]
 
-  override def process(context: Context) = Context {
-    val distances = {
-      for (s ← summaryStats) yield {
-        val variance = new DescriptiveStatistics(s.toArray).getVariance()
-        (s.zip(summaryStatsTarget) map {
-          case (a: Double, b: Double) ⇒ (Math.pow((a - b), 2) / variance)
-        }).reduceLeft(_ + _)
-      }
+  def distancesValue(context: Context) =
+    for {
+      summaryStat ← summaryStatsMatrix(context)
+    } yield {
+      val variance = new DescriptiveStatistics(summaryStat.toArray).getVariance
+      (summaryStat zip summaryStatsTarget).map {
+        case (a, b) ⇒ Math.pow(a - b, 2) / variance
+      }.reduceLeftOption(_ + _).getOrElse(throw new UserBadDataError("Summary stat shouldn't be empty"))
     }
-    Variable(proto, distances)
-  }
+
 }

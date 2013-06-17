@@ -25,14 +25,40 @@ import org.openmole.core.model.task._
 import org.openmole.misc.tools.math._
 import org.openmole.core.model.data
 
-sealed abstract class Beaumont extends Task {
+/*object Beaumont {
 
-  val weights: List[Double]
+  def apply(
+    name: String,
+    target: Seq[Double],
+    distance: Prototype[Array[Double]] = Prototype[Double]("distance").toArray)(implicit plugins: PluginSet) = {
+
+    val _distance = distance
+
+    new TaskBuilder { builder ⇒
+
+      addOutput(distance)
+
+      private val _summaryStats = ListBuffer[Prototype[Double]]()
+
+      def addSummaryStat(p: Prototype[Double]) = {
+        _summaryStats += p
+        addInput(p.toArray)
+      }
+
+      def toTask =
+        new DistanceTask(name) with builder.Built {
+          val summaryStats = _summaryStats.toList.map(_.toArray)
+          val summaryStatsTarget = target
+          val distances = _distance
+        }
+    }
+  }
+
+}     */
+
+sealed abstract class Beaumont(val name: String, val weights: Seq[Double]) extends Task with Distance with Selection {
+
   val selected: List[(Double /*distances*/ , Double /*thetas*/ , List[Double] /*summaryStats*/ )]
-  val summaryStatsTarget: List[Double]
-  /*X dans Beaumont 2002*/
-  val matrix: RealMatrix
-  val proto: Prototype[Any]
 
   def createMatrix = {
 
@@ -43,7 +69,7 @@ sealed abstract class Beaumont extends Task {
 
   }
 
-  def process = {
+  /*override def process(context: Context) = {
 
-  }
+  }   */
 }
