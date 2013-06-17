@@ -206,8 +206,7 @@ class GliteEnvironment(
 
   @transient lazy val authentication = GliteAuthentication.get match {
     case Some(a) ⇒
-      val file = Workspace.newFile("proxy", ".x509")
-      FileDeleter.deleteWhenGarbageCollected(file)
+      val file = FileDeleter.deleteWhenGarbageCollected(Workspace.newFile("proxy", ".x509"))
       GliteAuthentication.initialise(a)(
         vomsURL,
         voName,
@@ -217,7 +216,7 @@ class GliteEnvironment(
     case None ⇒ throw new UserBadDataError("No athentication has been initialized for glite.")
   }
 
-  def delegate = jobServices.foreach { _.delegate }
+  def delegate = jobServices.foreach { _.delegated = false }
 
   override def allJobServices = {
     val jss = bdiiServer.queryWMS(voName, Workspace.preferenceAsDuration(FetchResourcesTimeOut).toSeconds.toInt)

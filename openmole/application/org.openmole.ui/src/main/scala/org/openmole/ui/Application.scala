@@ -80,10 +80,17 @@ class Application extends IApplication with Logger {
     val args: Array[String] = context.getArguments.get("application.args").asInstanceOf[Array[String]]
 
     val config = parse(args.toList)
-    config.pluginsDirs.foreach { PluginManager.load }
 
-    val userPlugins = config.userPlugins.map { new File(_) }.toSet
-    PluginManager.load(userPlugins)
+    val userPlugins = config.userPlugins.map(p ⇒ new File(p))
+
+    val plugins: List[String] =
+      config.pluginsDirs ++
+        config.userPlugins ++
+        (if (!config.console && !config.server) config.guiPluginsDirs else List.empty)
+
+    PluginManager.load(
+      plugins.map(p ⇒ new File(p))
+    )
 
     try {
       config.password foreach Workspace.setPassword
@@ -118,8 +125,6 @@ class Application extends IApplication with Logger {
       server.start()
     }
     else {
-
-      config.guiPluginsDirs.foreach { PluginManager.load }
 
       val waitClose = new Semaphore(0)
       val application = new GUIApplication() {
