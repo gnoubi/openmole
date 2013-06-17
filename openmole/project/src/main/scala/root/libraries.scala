@@ -158,5 +158,5 @@ object Libraries extends Defaults {
 
   lazy val jline = OsgiProject("net.sourceforge.jline") settings (libraryDependencies += "jline" % "jline" % "0.9.94", exportPackage := Seq("jline.*"))
 
-  lazy val breeze = OsgiProject("org.scalanlp.breeze.math") settings (libraryDependencies += "org.scalanlp" % "breeze-math" % "0.3", exportPackage := Seq("breeze.linalg"))
+  lazy val breeze = OsgiProject("org.scalanlp.breeze.math") settings (libraryDependencies += "org.scalanlp" %% "breeze-math" % "0.3", exportPackage := Seq("breeze.linalg"))
 }

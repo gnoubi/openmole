@@ -28,7 +28,7 @@ import org.openmole.core.model.data
 sealed abstract class Beaumont extends Task {
 
   val weights: List[Double]
-  val selected: List[(Double/*distances*/, Double/*thetas*/, List[Double]/*summaryStats*/)]
+  val selected: List[(Double /*distances*/ , Double /*thetas*/ , List[Double] /*summaryStats*/ )]
   val summaryStatsTarget: List[Double]
   /*X dans Beaumont 2002*/
   val matrix: RealMatrix
