@@ -24,6 +24,7 @@ import org.openmole.core.model.task.PluginSet
 import org.openmole.core.model.task._
 import org.openmole.misc.tools.math._
 import org.openmole.core.model.data
+import breeze.linalg.DenseMatrix
 
 /*object Beaumont {
 
@@ -56,13 +57,11 @@ import org.openmole.core.model.data
 
 }     */
 
-sealed abstract class Beaumont(val name: String, val weights: Seq[Double]) extends Task with Distance with Selection {
+sealed abstract class Beaumont(val name: String, val weights: Seq[Double], val context: Context) extends Task with Distance with Selection {
 
-  val selected: List[(Double /*distances*/ , Double /*thetas*/ , List[Double] /*summaryStats*/ )]
-
-  def createMatrix = {
-
-  }
+  /*d = distance; t = thetas; s = summaryStats. They are the nearest points of the target*/
+  val (d, t, s) = select(context, distancesValue(context)).unzip
+  val X = DenseMatrix.ones(d.toArray.length, t.toArray.length)
 
   /*à déplacer en amont, sera fait par une autre tache dans le WF*/
   def calculWeight = {

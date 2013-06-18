@@ -24,7 +24,7 @@ trait Distance <: SummaryStats {
 
   def summaryStatsTarget: Seq[Double]
 
-  def distancesValue(context: Context) =
+  def distancesValue(context: Context): Seq[Double] =
     for {
       summaryStat ← summaryStatsMatrix(context)
     } yield {
