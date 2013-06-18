@@ -38,6 +38,7 @@ import scala.collection.JavaConversions._
 import scala.io.Source
 import org.openmole.misc.tools.service.Duration._
 import StatusFiles._
+import scalax.io.Resource
 
 trait GliteJobService extends GridScaleJobService with JobServiceQualityControl with LimitedAccess with AvailabitityQuality with JobScript { js ⇒
 
@@ -75,11 +76,7 @@ trait GliteJobService extends GridScaleJobService with JobServiceQualityControl 
         val _runningPath = storage.child(path, runningFile)
         val _finishedPath = storage.child(path, finishedFile)
 
-        val os = script.bufferedOutputStream
-        try generateScript(serializedJob, outputFilePath, Some(_runningPath), Some(_finishedPath), os)
-        finally os.close
-
-        //logger.fine(ISource.fromFile(script).mkString)
+        Resource.fromFile(script).write(generateScript(serializedJob, outputFilePath, Some(_runningPath), Some(_finishedPath)))
 
         val jobDescription = buildJobDescription(script)
 
