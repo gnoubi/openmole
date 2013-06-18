@@ -60,12 +60,15 @@ import breeze.linalg.DenseMatrix
 sealed abstract class Beaumont(val name: String, val weights: Seq[Double], val context: Context) extends Task with Distance with Selection {
 
   /*d = distance; t = thetas; s = summaryStats. They are the nearest points of the target*/
-  val (d, t, s) = select(context, distancesValue(context)).unzip
-  val X = DenseMatrix.ones(d.toArray.length, t.toArray.length)
+  val (d, t, s) = select(context, distancesValue(context)).unzip3
+  val X = DenseMatrix.ones[Double](t.toArray.length, d.toArray.length)
+  val i = 0
+  val j = 1
+
+  /*X[i][j] = sumStats[i+1][j-1] - sumStatsTarget[j-1]*/
 
   /*à déplacer en amont, sera fait par une autre tache dans le WF*/
   def calculWeight = {
-
   }
 
   /*override def process(context: Context) = {
