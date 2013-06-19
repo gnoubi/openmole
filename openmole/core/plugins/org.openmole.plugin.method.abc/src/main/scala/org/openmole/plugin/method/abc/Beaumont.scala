@@ -61,14 +61,15 @@ sealed abstract class Beaumont(val name: String, val weights: Seq[Double], val c
 
   /*d = distance; t = thetas; s = summaryStats. They are the nearest points of the target*/
   val (d, t, s) = select(context, distancesValue(context)).unzip3
-  val X = DenseMatrix.ones[Double](t.toArray.length, d.toArray.length)
-  val i = 0
-  val j = 1
+  val X = DenseMatrix.ones[Double](t.toList.length, d.toList.length)
 
-  /*X[i][j] = sumStats[i+1][j-1] - sumStatsTarget[j-1]*/
+  /*for (r <- X.rows; c <- X.cols) yield X(::, c) := (summaryStatsMatrix(context).toArray[r+1][c-1] - summaryStatsTarget.toArray[c-1])*/
+
+  /*formule n°6 - Beaumont 2002*/
 
   /*à déplacer en amont, sera fait par une autre tache dans le WF*/
   def calculWeight = {
+    val W = for (selectedDist ← d) yield 1 - math.pow((selectedDist / d.toList.max), 2)
   }
 
   /*override def process(context: Context) = {
