@@ -11,6 +11,6 @@ object HelloBuild extends Defaults {
 
   override def settings = super.settings ++ Seq(
     //make openmole repo the resolver of last resort
-    resolvers ++= Seq(DefaultMavenRepository,"openmole-public" at "http://maven.openmole.org/public")
+    resolvers ++= Seq(DefaultMavenRepository,"openmole-public" at "http://maven.openmole.org/public", Resolver.sonatypeRepo("snapshots"))
   )
 }
