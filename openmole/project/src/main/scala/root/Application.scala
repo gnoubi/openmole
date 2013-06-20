@@ -173,6 +173,7 @@ object Application extends Defaults {
           "org.openmole.ide" %% "org.openmole.ide.misc.visualization" % v,
           "org.openmole" %% "de.erichseifert.gral" % v intransitive (),
           "org.openmole.web" %% "org.openmole.web.core" % v,
+          "org.openmole" %% "scala.pickling" % v,
           "org.openmole.ui" %% "org.openmole.ui" % v exclude ("org.eclipse.equinox", "*")
 
         )

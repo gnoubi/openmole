@@ -20,6 +20,6 @@ object Core extends GuiDefaults {
   lazy val implementation = OsgiProject("org.openmole.ide.core.implementation") settings
     (libraryDependencies <+= (osgiVersion) { oV ⇒ "org.eclipse.core" % "org.eclipse.osgi" % oV }) dependsOn
     (provided(robustIt), model, provided(base.Core.model), provided(base.Core.batch), base.Misc.exception, provided(base.Misc.eventDispatcher),
-      provided(base.Misc.workspace), provided(base.Misc.tools), provided(xstream), provided(Apache.config), provided(Apache.log4j), provided(groovy), provided(jodaTime), provided(netbeans),
+      provided(base.Misc.workspace), provided(base.Misc.tools), provided(xstream), provided(pickling), provided(Apache.config), provided(Apache.log4j), provided(groovy), provided(jodaTime), provided(netbeans),
       Misc.widget, Misc.tools, provided(Misc.visualization), provided(gral))
 }

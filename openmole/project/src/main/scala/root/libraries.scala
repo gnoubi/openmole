@@ -19,7 +19,7 @@ object Libraries extends Defaults {
   lazy val all = Project(id = "openmole-libraries",
     base = file("libraries")) aggregate (jetty, scalatra, logback, h2, bonecp, slick, slf4j, xstream, icu4j, groovy,
       objenesis, scalaLang, Apache.all, jodaTime, gnuCrypto, db4o, jasypt, robustIt, netlogo4, netlogo5, opencsv,
-      netlogo4_noscala, netlogo5_noscala, gridscale, guava, jsyntaxpane, gral, miglayout, netbeans, mgo, jline, jacksonJson)
+      netlogo4_noscala, netlogo5_noscala, gridscale, guava, jsyntaxpane, gral, miglayout, netbeans, mgo, jline, jacksonJson, pickling)
 
   lazy val jetty = OsgiProject("org.eclipse.jetty", exports = Seq("org.eclipse.jetty.*", "javax.*")) settings
     (libraryDependencies ++= Seq("org.eclipse.jetty" % "jetty-webapp" % "8.1.8.v20121106",
@@ -51,6 +51,8 @@ object Libraries extends Defaults {
     (libraryDependencies += "com.typesafe.slick" %% "slick" % "1.0.0")
 
   lazy val slf4j = OsgiProject("org.slf4j") settings (libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.2")
+
+  lazy val pickling = OsgiProject("scala.pickling", buddyPolicy = Some("global")) settings (libraryDependencies += "org.scala-lang" %% "scala-pickling" % "0.8.0-SNAPSHOT")
 
   lazy val xstream = OsgiProject("com.thoughtworks.xstream", buddyPolicy = Some("global"), privatePackages = Seq("!scala.*", "*")) settings
     (libraryDependencies ++= Seq("com.thoughtworks.xstream" % "xstream" % "1.4.1",
