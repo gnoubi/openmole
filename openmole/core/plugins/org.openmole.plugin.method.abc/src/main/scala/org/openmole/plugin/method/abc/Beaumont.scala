@@ -63,7 +63,6 @@ sealed abstract class Beaumont(val name: String, /* val weights: Seq[Double],*/ 
   /*d = distance; t = thetas; s = summaryStats. They are the nearest points of the target*/
   val (d, t, s) = select(context, distancesValue(context)).unzip3
   val xMatrix = DenseMatrix.ones[Double](t.toList.length, d.toList.length)
-  println("test")
 
   /*à déplacer en amont, sera fait par une autre tache dans le WF*/
   def calculWeight: List[Double] = {
