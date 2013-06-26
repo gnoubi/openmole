@@ -19,11 +19,6 @@ package org.openmole.plugin.method.abc
 import org.openmole.core.implementation.task.Task
 import org.openmole.core.model.data._
 import scala.collection.immutable.List
-import org.apache.commons.math3.linear._
-import org.openmole.core.model.task.PluginSet
-import org.openmole.core.model.task._
-import org.openmole.misc.tools.math._
-import org.openmole.core.model.data
 import breeze.linalg._
 
 /*object Beaumont {
@@ -75,8 +70,11 @@ sealed abstract class Beaumont(val name: String, /* val weights: Seq[Double],*/ 
   /*for (r <- xMatrix.rows; c <- xMatrix.cols) yield xMatrix(::, c) := (summaryStatsMatrix(context).toArray[r+1][c-1] - summaryStatsTarget.toArray[c-1])*/
 
   /*formule n°6 - Beaumont 2002*/
-  /*xMatrix.t * xMatrix2.t*/
-  val test = inv(xMatrix.t * weights.t) * xMatrix.t * weights.t/* * thetas*/
+  val test = inv(xMatrix.t * weights.t * xMatrix.t) * xMatrix.t * weights.t /* * thetas */
+  val beta = test(::, 1 until test.cols)
+  /*Calcul des nouveaux points, transformer summaryStats en matrice (voir avec Romain)*/
+  val newPoints = for (phi <- thetas; si <- summaryStats) yield (phi - (si - summaryStatsTarget) * beta.t)
+  /*retirer la première colonne de test pour la suite des calculs*/
   /*override def process(context: Context) = {
 
   }   */
