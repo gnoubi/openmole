@@ -1,0 +1,90 @@
+info:
+    appName: OpenMOLE
+    appVersion: $version
+    createUninstaller: yes
+    javaVersion: 1.7
+    runPrivileged:
+        enabled: no
+    pack200: yes
+
+packs:
+    pack:
+        name: OpenMOLE Core
+        required: yes
+        description: OpenMOLE Core
+        fileset:
+            includes: $installSourceDir/openmole/
+            targetDir: $INSTALL_PATH
+        file:
+            src: $installSourceDir/resources/register.bat
+            targetDir: $INSTALL_PATH/register.bat
+            override: true
+    pack:
+        name: OpenMOLE Runtime
+        required: yes
+        description: OpenMOLE Runtime
+        file:
+            src: $installSourceDir/runtime/runtime.tar.gz
+            targetDir: $USER_HOME/.openmole/runtime/
+        file:
+            src: $installSourceDir/runtime/jvm-x64.tar.gz
+            targetDir: $USER_HOME/.openmole/runtime/
+        file:
+            src: $installSourceDir/runtime/jvm-386.tar.gz
+            targetDir: $USER_HOME/.openmole/runtime/
+    pack:
+        name: OpenMOLE Icons
+        required: yes
+        description: OpenMOLE Icons
+        file:
+            src: $installSourceDir/resources/openmole.ico
+            targetDir: $INSTALL_PATH/openmole.ico
+            override: true
+        file:
+            src: $installSourceDir/resources/openmole-uninstall.ico
+            targetDir: $INSTALL_PATH/openmole-uninstall.ico
+            override: true
+        file:
+            src: $installSourceDir/resources/openmole.png
+            targetDir: $INSTALL_PATH/openmole.png
+            override: true
+        file:
+            src: $installSourceDir/resources/openmole-uninstall.png
+            targetDir: $INSTALL_PATH/openmole-uninstall.png
+            override: true
+        executable:
+            targetFile: $INSTALL_PATH/openmole
+            stage: never
+
+resources:
+    resource:
+        id: LicencePanel.licence
+        src: $installSourceDir/resources/AGPLv3.txt
+    resource:
+        id: shortcutSpec.xml
+        src: $installSourceDir/resources/shortcutSpec.xml
+    resource:
+        id: Unix_shortcutSpec.xml
+        src: $installSourceDir/resources/Unix_shortcutSpec.xml
+
+panels:
+    panel:
+        className: HelloPanel
+    panel:
+        className: LicencePanel
+    panel:
+        className: TargetPanel
+    panel:
+        className: InstallPanel
+    panel:
+        className: ShortcutPanel
+    panel:
+        className: SimpleFinishPanel
+
+languages:
+    - eng
+
+guiprefs:
+    resizable: yes
+    width: 640
+    height: 480
