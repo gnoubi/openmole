@@ -27,8 +27,17 @@ import org.openmole.core.model.sampling._
 import org.openmole.misc.workspace._
 import org.openmole.core.implementation.task.Task._
 
+/**
+ * Latin Hypercube Sampler from a set of factors using uniform distributions.
+ */
 object LHS {
 
+  /**
+   * Build a Latin Hypercube sampler with a set of factors using uniform distributions.
+   * @param samples number of samples to generate
+   * @param factors factors used
+   * @return
+   */
   def apply(samples: Int, factors: Factor[Double, Domain[Double] with Bounds[Double]]*) =
     new LHS(samples, factors: _*)
 
@@ -42,13 +51,11 @@ sealed class LHS(val samples: Int, val factors: Factor[Double, Domain[Double] wi
   override def build(context: Context): Iterator[Iterable[Variable[Double]]] = {
     val rng = newRNG(context(openMOLESeed))
 
-    (0 until samples).map {
-      _ ⇒
-        (0 until factors.size).map {
-          i ⇒ (i + rng.nextDouble) / factors.size
-        }.shuffled(rng).zip(factors).map {
-          case (v, f) ⇒ Variable(f.prototype, v.scale(f.domain.min(context), f.domain.max(context)))
+    factors.map {
+      f ⇒
+        (0 until samples).shuffled(rng).map {
+          i ⇒ Variable(f.prototype, ((i + rng.nextDouble) / samples).scale(f.domain.min(context), f.domain.max(context)))
         }
-    }.toIterator
+    }.transpose.toIterator
   }
 }
