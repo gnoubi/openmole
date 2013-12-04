@@ -28,6 +28,7 @@ import org.openmole.plugin.tools.groovy.ContextToGroovyCode
 
 object GroovyTask {
 
+  def newRNG() = org.openmole.misc.tools.service.Random.newRNG()
   def newRNG(seed: Long) = org.openmole.misc.tools.service.Random.newRNG(seed)
   def newFile() = org.openmole.misc.workspace.Workspace.newFile
   def newDir() = org.openmole.misc.workspace.Workspace.newDir

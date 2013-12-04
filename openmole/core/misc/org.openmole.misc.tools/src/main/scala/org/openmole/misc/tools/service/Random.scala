@@ -25,7 +25,7 @@ object Random { random ⇒
 
   val default = newRNG(UUID.randomUUID)
 
-  def newRNG(seed: Long) = new SynchronizedRandom(new Well44497b(seed))
+  def newRNG(seed: Long = default.nextLong) = new SynchronizedRandom(new Well44497b(seed))
 
   def newUnsychronizedRNG(seed: Long) = new RandomAdaptor(new Well44497b(seed))
 
@@ -39,6 +39,7 @@ object Random { random ⇒
     override def nextInt(n: Int) = synchronized { generator.nextInt(n) }
     override def nextLong = synchronized { generator.nextLong }
     override def setSeed(seed: Long) = synchronized { generator.setSeed(seed) }
+    def toScala = new scala.util.Random(this)
   }
 
   @transient lazy val longInterval = {
