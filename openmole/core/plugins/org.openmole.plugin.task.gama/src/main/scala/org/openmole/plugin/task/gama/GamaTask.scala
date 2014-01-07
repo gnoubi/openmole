@@ -26,9 +26,9 @@ import scala.collection.mutable.ListBuffer
 object GamaTask {
 
   def apply(name: String)(implicit plugins: PluginSet) = new TaskBuilder {
-    val toto = ListBuffer[Prototype[Double]]()
+    val toto = ListBuffer[Prototype[String]]()
 
-    def addToto(t: Prototype[Double]) = {
+    def addToto(t: Prototype[String]) = {
       addInput(t)
       addOutput(t)
       toto += t
@@ -39,9 +39,11 @@ object GamaTask {
 
 }
 
-abstract class GamaTask(val name: String, val toto: List[Prototype[Double]]) extends Task {
+abstract class GamaTask(val name: String, val toto: List[Prototype[String]]) extends Task {
 
   protected def process(context: Context) =
-    Context(toto.map { t ⇒ Variable(t, context(t) * 2) })
+    Context(toto.map { t ⇒
+      Variable(t, RmiClient.callServer())
+    })
 
 }
